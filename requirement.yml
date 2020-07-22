@@ -1,0 +1,5 @@
+# from galaxy
+- name: yatesr.timezone
+
+# from GitHub
+#- src: https://github.com/diimallya/tomcat-ansible/tree/master/roles/tomcat
