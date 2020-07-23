@@ -2,4 +2,5 @@
 - name: yatesr.timezone
 
 # from GitHub
-#- src: https://github.com/diimallya/tomcat-ansible/tree/master/roles/tomcat
+#- name: tomcat
+#  src: https://github.com/zaxos/tomcat-ansible-role
