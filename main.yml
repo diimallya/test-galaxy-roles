@@ -2,6 +2,6 @@
 - name: Test Galaxy Role 
   hosts: all       # Inventory hosts group / server to act on
   vars:
-   timezone: Indian/Mauritius
+   timezone: UTC
   roles:
     - yatesr.timezone
