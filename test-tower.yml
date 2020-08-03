@@ -1,5 +1,5 @@
 - name: Test AWX
-  hosts: local
+  hosts: localhost
   gather_facts: yes
   tasks:
   - name: Get Ansible
@@ -11,7 +11,7 @@
     register: syspath_output
   - debug: var=syspath_output
   - name: Python modules
-    shell: pip list | grep openshift
+    shell: pip3 list | grep openshift
     register: pip_output
   - debug: var=pip_output
   - name: Use K8s
