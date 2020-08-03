@@ -1,0 +1,95 @@
+#!/usr/bin/env ansible-playbook
+# Installs the company specific virtual environments for Python properly
+# into the Tower environment following the Ansible Tower environment notes:
+# URL: https://docs.ansible.com/ansible-tower/3.3.4/html/upgrade-migration-guide/virtualenv.html
+# 
+# NOTE: Requires the EPEL repository to install the python2-pip package.
+#
+# Usage:
+#   $ sudo ./setup_venvs.yml -i inventory.sand_swn01.ini
+#
+---
+- hosts: localhost
+  gather_facts: false
+
+  vars:
+    venvs:
+      # Setup the Kubernetes virtual environment
+      - dirname: Kubernetes
+        modules:
+          - k8s
+          - openshift
+          - requests
+        prereqs:
+          - gcc
+
+  tasks:
+  - name: "Ensure pip is installed"
+    # NOTE: This is from the EPEL repository.
+    yum:
+      name: python2-pip
+      state: latest
+
+  - name: "Ensure pip has latest tools"
+    # Notes taken from the Ansible container page:
+    # https://docs.ansible.com/ansible-container/installation.html
+    pip:
+      name:
+        - setuptools
+      extra_args: --upgrade
+
+  - name: "Install packages OUTSIDE Tower virtual environments"
+    # Necessary to make 'openshift' for the 'k8s' module.
+    pip:
+      name:
+        - openshift
+      extra_args: --ignore-installed
+
+  - name: "Install Python virtual environment packages"
+    yum:
+      name:
+        - python-virtualenv
+      state: latest
+
+  - name: "Install pip module required packages"
+    yum:
+      name: "{{ item.prereqs }}"
+      state: latest
+    loop: "{{ venvs }}"
+    when: item.prereqs is defined
+
+  - name: "Clean out old venv directories"
+    file:
+      path: "/var/lib/awx/venv/{{ item.dirname }}"
+      state: absent
+    become: true
+    loop: "{{ venvs }}"
+
+  - name: "Create the venv skeleton directory"
+    file:
+      path: "/var/lib/awx/venv/{{ item.dirname }}"
+      state: directory
+    become: true
+    loop: "{{ venvs }}"
+
+  - name: "Install base Tower packages"
+    pip:
+      name:
+        - python-memcached
+        - psutil
+      umask: "0022"
+      state: latest
+      virtualenv: "/var/lib/awx/venv/{{ item.dirname }}"
+      virtualenv_site_packages: yes
+      extra_args: --ignore-installed
+    loop: "{{ venvs }}"
+
+  - name: "Install requested packages in virtual env"
+    pip:
+      name: "{{ item.modules }}"
+      umask: "0022"
+      state: latest
+      virtualenv: "/var/lib/awx/venv/{{ item.dirname }}"
+      virtualenv_site_packages: yes
+      extra_args: --ignore-installed
+    loop: "{{ venvs }}"
