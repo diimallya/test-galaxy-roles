@@ -1,0 +1,25 @@
+---
+- hosts: 173.193.75.13
+  gather_facts: false
+  connection: local
+
+  collections:
+    - community.kubernetes
+
+  vars:
+    ansible_python_interpreter: '{{ ansible_playbook_python }}'
+
+  tasks:
+    - name: Ensure the default Namespace exists.
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: default
+        state: present
+
+    - name: Create a kubernetes namespace
+      k8s:
+        name: myns
+        api_version: v1
+        kind: Namespace
+        state: present

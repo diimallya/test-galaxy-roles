@@ -1,6 +1,11 @@
-# from galaxy
-- name: yatesr.timezone
+roles:
+  # from galaxy
+  - name: yatesr.timezone
 
-# from GitHub
-#- name: tomcat
-#  src: https://github.com/zaxos/tomcat-ansible-role
+  # from GitHub
+  #- name: tomcat
+  #  src: https://github.com/zaxos/tomcat-ansible-role
+
+collections:
+  - name: community.kubernetes
+    version: 1.0.0
