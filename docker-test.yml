@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  tasks:
+  - name: pull hello-world image
+    docker_image:
+      name: hello-world
+      source: pull
+
+  - name: "Tag the image"
+    docker_image:
+     name: "hello-world:latest"
+     repository: "us.icr.io/divya_ns/hello-world:latest"
+
+  - name: "Push to docker registry"
+    docker_image:
+      name: "us.icr.io/divya_ns/hello-world:latest"
+      push: yes
